@@ -10,7 +10,7 @@ var (
 	separator = lipgloss.NewStyle().Foreground(lipgloss.Color("#3C3C3C")).Render(" • ")
 
 	// Styles
-    colStyle = lipgloss.NewStyle().Width(30)
+	colStyle  = lipgloss.NewStyle().Width(30)
 	helpStyle = lipgloss.NewStyle().Margin(2, 0, 1, 4)
 	keyStyle  = lipgloss.NewStyle().Foreground(lipgloss.Color("#626262"))
 	descStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#4A4A4A"))

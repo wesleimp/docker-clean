@@ -66,7 +66,7 @@ func (m ContainersModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		case "a":
 			m.selected = map[int]struct{}{} // reset selection
-            m.cursor = 0 // reset cursor
+			m.cursor = 0                    // reset cursor
 			m.all = !m.all
 			contaiers, err := containers.List(m.client, m.all)
 			if err != nil {
