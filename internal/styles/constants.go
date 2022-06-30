@@ -1,0 +1,10 @@
+package styles
+
+const (
+	MARKER_COLUMN_SIZE     = 2
+	ID_COLUMN_SIZE         = 18
+	NAME_COLUMN_SIZE       = 40
+	IMAGE_NAME_COLUMN_SIZE = 35
+	STATUS_COLUMN_SIZE     = 30
+	STATE_COLUMN_SIZE      = 15
+)
