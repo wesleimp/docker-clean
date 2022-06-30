@@ -21,21 +21,15 @@ func main() {
 	app := &cli.App{
 		Name:  "docker-clean",
 		Usage: "Clean up your docker state interactively",
-		Action: func(_ *cli.Context) error {
-			client, err := client.NewEnvClient()
-			if err != nil {
-				return err
-			}
-
-			p := tea.NewProgram(screens.NewInitialModel(client))
-			p.EnterAltScreen()
-			defer p.ExitAltScreen()
-
-			if err := p.Start(); err != nil {
-				return err
-			}
-
-			return nil
+		Commands: []*cli.Command{
+			{
+				Name:    "containers",
+				Aliases: []string{"c"},
+				Usage:   "Interact with containers",
+				Action: func(_ *cli.Context) error {
+					return run(screens.ContainersScreen)
+				},
+			},
 		},
 	}
 
@@ -44,4 +38,21 @@ func main() {
 		fmt.Println(styles.Error.Render(err.Error()))
 		os.Exit(1)
 	}
+}
+
+func run(s screens.Screen) error {
+	client, err := client.NewEnvClient()
+	if err != nil {
+		return err
+	}
+
+	p := tea.NewProgram(screens.NewInitialModel(client, s))
+	p.EnterAltScreen()
+	defer p.ExitAltScreen()
+
+	if err := p.Start(); err != nil {
+		return err
+	}
+
+	return nil
 }

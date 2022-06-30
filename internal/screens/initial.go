@@ -21,7 +21,7 @@ type InitialModel struct {
 }
 
 // NewInitialModel creates a new InitialModel with required fields.
-func NewInitialModel(c *client.Client) InitialModel {
+func NewInitialModel(c *client.Client, _ Screen) InitialModel {
 	s := spinner.NewModel()
 	s.Spinner = spinner.MiniDot
 
