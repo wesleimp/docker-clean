@@ -18,6 +18,7 @@ const (
 )
 
 type ContainersModel struct {
+	msg        string
 	err        error
 	client     *client.Client
 	containers []types.Container
@@ -49,14 +50,16 @@ func (m ContainersModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.cursor < len(m.containers)-1 {
 				m.cursor++
 			}
-		case "s":
-			for i := range m.containers {
-				m.selected[i] = struct{}{}
+		case "r":
+			m.selected = map[int]struct{}{} // reset selection
+			m.cursor = 0                    // reset cursor
+			m.err = nil
+			m.msg = ""
+			contaiers, err := containers.List(m.client, m.all)
+			if err != nil {
+				m.err = err
 			}
-		case "n":
-			for i := range m.selected {
-				delete(m.selected, i)
-			}
+			m.containers = contaiers
 		case "enter", " ":
 			_, ok := m.selected[m.cursor]
 			if ok {
@@ -67,12 +70,25 @@ func (m ContainersModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "a":
 			m.selected = map[int]struct{}{} // reset selection
 			m.cursor = 0                    // reset cursor
+			m.msg = ""                      // reset cursor
+			m.err = nil                     // reset cursor
 			m.all = !m.all
 			contaiers, err := containers.List(m.client, m.all)
 			if err != nil {
 				m.err = err
 			}
 			m.containers = contaiers
+		case "d":
+			var cc []types.Container
+			for i := range m.selected {
+				cc = append(cc, m.containers[i])
+			}
+
+			err := containers.Remove(m.client, cc)
+			if err != nil {
+				m.err = err
+			}
+			m.msg = "Container(s) removed successfully"
 		case "ctrl+c", "q", "esc":
 			return m, tea.Quit
 		}
@@ -86,6 +102,12 @@ func (m ContainersModel) View() string {
 	if m.err != nil {
 		errs := styles.Error.Copy()
 		return errs.MarginLeft(2).Render("Failed to load containers.")
+	}
+
+	if m.msg != "" {
+		checkmark := lipgloss.NewStyle().MarginRight(1).Foreground(lipgloss.Color("#13cb13")).Render("")
+		msg := styles.Message.Render(checkmark + m.msg)
+		return msg + helpViewSimple()
 	}
 
 	marker := lipgloss.NewStyle().Width(styles.MARKER_COLUMN_SIZE)
@@ -140,9 +162,15 @@ func helpView() string {
 		{Key: "up/down j/k", Help: "navigate"},
 		{Key: "space/enter", Help: "toggle selection"},
 		{Key: "a", Help: "toggle list all"},
-		{Key: "d", Help: "delete all selected"},
-		{Key: "s", Help: "select all"},
-		{Key: "n", Help: "deselect all"},
+		{Key: "d", Help: "remove all selected"},
+		{Key: "r", Help: "refresh list"},
+		{Key: "q/esc", Help: "quit"},
+	})
+}
+
+func helpViewSimple() string {
+	return help.View([]help.HelpOption{
+		{Key: "r", Help: "refresh list"},
 		{Key: "q/esc", Help: "quit"},
 	})
 }

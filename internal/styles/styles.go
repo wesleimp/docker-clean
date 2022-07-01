@@ -8,4 +8,5 @@ var (
 	Header      = lipgloss.NewStyle().Margin(1, 1, 0, 2)
 	Row         = lipgloss.NewStyle().MarginLeft(2)
 	SelectedRow = lipgloss.NewStyle().MarginLeft(2).Foreground(lipgloss.Color("205"))
+	Message     = lipgloss.NewStyle().Margin(1, 1, 0, 2)
 )
